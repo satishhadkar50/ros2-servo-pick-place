@@ -30,58 +30,9 @@ pick_place node ──joint angles──▶ /joint_states ──▶ robot_state_
 3. Twenty times per second it publishes the current joint angles and redraws the scene.
 4. robot_state_publisher combines the angles with the URDF and publishes the position of every part on `/tf`, which RViz uses to draw the arm.
 
-## Package structure
-
-```
-arm_description/
-├── urdf/arm.urdf                 robot model
-├── launch/
-│   ├── display.launch.py         arm with joint sliders
-│   ├── move.launch.py            arm holding a fixed pose
-│   └── pick.launch.py            automatic pick and place
-├── rviz/display.rviz             saved RViz view
-├── arm_description/
-│   ├── pose_pb.py                simple pose publisher
-│   └── pick_place.py             pick-and-place node
-├── media/                        demo GIF
-├── package.xml
-└── setup.py
-```
-
-## Run it
-
-Tested on Ubuntu 24.04 with ROS 2 Jazzy.
-
-```bash
-# install the tools used by the launch files
-sudo apt install ros-jazzy-joint-state-publisher-gui ros-jazzy-xacro
-
-# create a workspace and get the package
-mkdir -p ~/ros2_ws/src && cd ~/ros2_ws/src
-git clone <this-repo-url> arm_description
-
-# build
-cd ~/ros2_ws
-colcon build --symlink-install
-source install/setup.bash
-
-# automatic pick and place
-ros2 launch arm_description pick.launch.py
-
-# or move the joints yourself with sliders
-ros2 launch arm_description display.launch.py
-```
-
 ## Limitations
 
 This is a **kinematic simulation**: RViz has no physics, so the cubes are attached and released by the code rather than gripped through real contact.
-
-## Next steps
-
-- Gazebo simulation with collision, mass and ros2_control for real grasping physics
-- MoveIt 2 for motion planning
-- Driving my real ESP32 servo arm with the same ROS code via micro-ROS
-- Camera-based object detection with PyTorch / YOLO
 
 ## Author
 
