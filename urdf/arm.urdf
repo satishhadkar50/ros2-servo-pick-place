@@ -1,0 +1,288 @@
+<?xml version="1.0"?>
+<robot name="simple_arm">
+
+  <!-- ===== Colour palette ===== -->
+  <material name="base_black">   <color rgba="0.08 0.08 0.08 1.0"/> </material>
+  <material name="servo_blue">   <color rgba="0.15 0.35 0.75 1.0"/> </material>
+  <material name="horn_grey">    <color rgba="0.30 0.30 0.30 1.0"/> </material>
+  <material name="arm_orange">   <color rgba="1.00 0.65 0.30 1.0"/> </material>
+  <material name="palm_green">   <color rgba="0.20 0.65 0.30 1.0"/> </material>
+  <material name="finger_red">   <color rgba="1.00 0.45 0.45 1.0"/> </material>
+
+  <!-- ===================== BASE ===================== -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0.005"/>
+      <geometry>
+        <box size="0.12 0.12 0.01"/>
+      </geometry>
+      <material name="base_black"/>
+    </visual>
+  </link>
+
+  <!-- Base servo: upright, standing on the plate -->
+  <joint name="base_servo_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_servo"/>
+    <origin xyz="0 0 0.03"/>
+  </joint>
+  <link name="base_servo">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.02" length="0.04"/>
+      </geometry>
+      <material name="servo_blue"/>
+    </visual>
+  </link>
+
+  <!-- JOINT 1: base rotation, on top of the base servo -->
+  <joint name="joint1" type="revolute">
+    <parent link="base_link"/>
+    <child link="link1"/>
+    <origin xyz="0 0 0.05"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-1.57" upper="1.57" effort="1.0" velocity="1.0"/>
+  </joint>
+
+  <!-- ===================== LINK 1: turntable ===================== -->
+  <link name="link1">
+    <visual>
+      <origin xyz="0 0 0.0025"/>
+      <geometry>
+        <cylinder radius="0.04" length="0.005"/>
+      </geometry>
+      <material name="base_black"/>
+    </visual>
+  </link>
+
+  <!-- Shoulder servo body: on its side, rides with the turntable -->
+  <joint name="shoulder_servo_joint" type="fixed">
+    <parent link="link1"/>
+    <child link="shoulder_servo"/>
+    <origin xyz="0 0 0.025" rpy="1.57 0 0"/>
+  </joint>
+  <link name="shoulder_servo">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.02" length="0.04"/>
+      </geometry>
+      <material name="servo_blue"/>
+    </visual>
+  </link>
+
+  <!-- JOINT 2: shoulder, at the shoulder servo shaft -->
+  <joint name="joint2" type="revolute">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <origin xyz="0 0 0.025"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="1.57" effort="1.0" velocity="1.0"/>
+  </joint>
+
+  <!-- ===================== LINK 2: upper arm ===================== -->
+  <link name="link2">
+    <visual>
+      <origin xyz="0 0.027 0.075"/>
+      <geometry>
+        <box size="0.02 0.005 0.15"/>
+      </geometry>
+      <material name="arm_orange"/>
+    </visual>
+  </link>
+
+  <!-- Shoulder horn: on the shaft, turns WITH joint2 (belongs to link2) -->
+  <joint name="shoulder_horn_joint" type="fixed">
+    <parent link="link2"/>
+    <child link="shoulder_horn"/>
+    <origin xyz="0 0.022 0" rpy="1.57 0 0"/>
+  </joint>
+  <link name="shoulder_horn">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.012" length="0.004"/>
+      </geometry>
+      <material name="horn_grey"/>
+    </visual>
+  </link>
+  <joint name="shoulder_horn_arm_joint" type="fixed">
+    <parent link="shoulder_horn"/>
+    <child link="shoulder_horn_arm"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+  <link name="shoulder_horn_arm">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.035 0.006 0.004"/>
+      </geometry>
+      <material name="horn_grey"/>
+    </visual>
+  </link>
+
+  <!-- Elbow servo body: on its side, at the top of the upper arm -->
+  <joint name="elbow_servo_joint" type="fixed">
+    <parent link="link2"/>
+    <child link="elbow_servo"/>
+    <origin xyz="0 0 0.15" rpy="1.57 0 0"/>
+  </joint>
+  <link name="elbow_servo">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.02" length="0.04"/>
+      </geometry>
+      <material name="servo_blue"/>
+    </visual>
+  </link>
+
+  <!-- Elbow bearing hub: right side of the elbow servo, holds the upper arm bracket -->
+  <joint name="elbow_hub_joint" type="fixed">
+    <parent link="link2"/>
+    <child link="elbow_hub"/>
+    <origin xyz="0 0.02225 0.15" rpy="1.57 0 0"/>
+  </joint>
+  <link name="elbow_hub">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.008" length="0.0045"/>
+      </geometry>
+      <material name="horn_grey"/>
+    </visual>
+  </link>
+
+  <!-- JOINT 3: elbow, at the elbow servo shaft -->
+  <joint name="joint3" type="revolute">
+    <parent link="link2"/>
+    <child link="link3"/>
+    <origin xyz="0 0 0.15"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="1.57" effort="1.0" velocity="1.0"/>
+  </joint>
+
+  <!-- ===================== LINK 3: forearm ===================== -->
+  <link name="link3">
+    <visual>
+      <origin xyz="0 -0.027 0.06"/>
+      <geometry>
+        <box size="0.02 0.005 0.12"/>
+      </geometry>
+      <material name="arm_orange"/>
+    </visual>
+  </link>
+
+  <!-- Elbow horn: on the shaft, turns WITH joint3 (belongs to link3) -->
+  <joint name="elbow_horn_joint" type="fixed">
+    <parent link="link3"/>
+    <child link="elbow_horn"/>
+    <origin xyz="0 -0.022 0" rpy="1.57 0 0"/>
+  </joint>
+  <link name="elbow_horn">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.012" length="0.004"/>
+      </geometry>
+      <material name="horn_grey"/>
+    </visual>
+  </link>
+  <joint name="elbow_horn_arm_joint" type="fixed">
+    <parent link="elbow_horn"/>
+    <child link="elbow_horn_arm"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+  <link name="elbow_horn_arm">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.035 0.006 0.004"/>
+      </geometry>
+      <material name="horn_grey"/>
+    </visual>
+  </link>
+
+  <!-- ===================== GRIPPER ===================== -->
+  <joint name="palm_joint" type="fixed">
+    <parent link="link3"/>
+    <child link="palm"/>
+    <origin xyz="0 0 0.12"/>
+  </joint>
+  <link name="palm">
+    <visual>
+      <origin xyz="0 0 0.01"/>
+      <geometry>
+        <box size="0.03 0.08 0.02"/>
+      </geometry>
+      <material name="palm_green"/>
+    </visual>
+  </link>
+
+  <!-- FINGER JOINT (leader): left finger slides inward along -Y -->
+  <joint name="finger_joint" type="prismatic">
+    <parent link="palm"/>
+    <child link="left_finger"/>
+    <origin xyz="0 0.03 0.02"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="0" upper="0.012" effort="1.0" velocity="0.1"/>
+  </joint>
+  <link name="left_finger">
+    <visual>
+      <origin xyz="0 0 0.01"/>
+      <geometry>
+        <box size="0.02 0.01 0.02"/>
+      </geometry>
+      <material name="finger_red"/>
+    </visual>
+  </link>
+  <joint name="left_tip_joint" type="fixed">
+    <parent link="left_finger"/>
+    <child link="left_tip"/>
+    <origin xyz="0 0 0.02" rpy="0.4 0 0"/>
+  </joint>
+  <link name="left_tip">
+    <visual>
+      <origin xyz="0 0 0.015"/>
+      <geometry>
+        <box size="0.02 0.008 0.03"/>
+      </geometry>
+      <material name="finger_red"/>
+    </visual>
+  </link>
+
+  <!-- Right finger: copies finger_joint (mimic), slides inward along +Y -->
+  <joint name="right_finger_joint" type="prismatic">
+    <parent link="palm"/>
+    <child link="right_finger"/>
+    <origin xyz="0 -0.03 0.02"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="0" upper="0.012" effort="1.0" velocity="0.1"/>
+    <mimic joint="finger_joint" multiplier="1" offset="0"/>
+  </joint>
+  <link name="right_finger">
+    <visual>
+      <origin xyz="0 0 0.01"/>
+      <geometry>
+        <box size="0.02 0.01 0.02"/>
+      </geometry>
+      <material name="finger_red"/>
+    </visual>
+  </link>
+  <joint name="right_tip_joint" type="fixed">
+    <parent link="right_finger"/>
+    <child link="right_tip"/>
+    <origin xyz="0 0 0.02" rpy="-0.4 0 0"/>
+  </joint>
+  <link name="right_tip">
+    <visual>
+      <origin xyz="0 0 0.015"/>
+      <geometry>
+        <box size="0.02 0.008 0.03"/>
+      </geometry>
+      <material name="finger_red"/>
+    </visual>
+  </link>
+
+</robot>
